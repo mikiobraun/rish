@@ -1,31 +1,44 @@
+#!/usr/bin/env/ruby
+# -*- ruby -*-
+
 require 'rish/shell'
 require 'rish/autoreload'
 
 def banner
   puts <<EOS
     
-                            Marge / Shell
+                    rish - Ruby Interactive Shell
+
                an autoreloading interactive shell with
              interactive help, shell-outs and profiling.
 
                       written by Mikio L. Braun
 
-      Type doc 'expression' to get help on an object or method.
          Type 'exit' or hit Ctrl-D on an empty line to exit.
+              Type '@h' to get help on built-in commands
 
 EOS
 end
 
 def usage
   puts <<EOS
-Usage: marge [options] files_to_require.rb ...
+Usage: rish [options] files_to_require.rb ...
 
 Options:
-  -a         : load all *.rb files in lib/ on startup
+  -a dir     : load all *.rb files in dir/ on startup
+  -w dir     : watch all *.rb files in dir/ for changes
+  -I dir     : add dir/ to load-path
+  --irb      : use IRB as shell (default)
+  --rish     : user rish's own shell
   -h, --help : show help (this)
 EOS
-
 end
+
+# 
+# Main
+#
+
+banner
 
 type = :irb
 
@@ -57,8 +70,6 @@ until ARGV.empty?
     require cmd
   end
 end
-
-banner
 
 Rish::Autoreload.check_directories
 

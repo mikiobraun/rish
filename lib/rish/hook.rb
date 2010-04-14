@@ -24,6 +24,8 @@ module Rish
           Profiler__::start_profile
           @profile = true
           line = line[2..-1]
+        elsif line[1] == ?h
+          'Rish::Commands.help'
         else
           line
         end
