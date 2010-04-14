@@ -1,11 +1,25 @@
+# Copyright (c) 2010 by Mikio L. Braun
+# rish is distributed under a BSD-style license. See COPYING
+
 require 'profiler'
 require 'rish/autoreload'
 require 'rish/commands'
 
 module Rish
+  # The main Hook class.
+  #
+  # This adds the main functionality realized through before
+  # and after hooks.
+  #
+  # If you want to add further capabilities, here is the place to do
+  # so.
   class Hook
     @profile = false
     
+    # Called with each input line.
+    #
+    # If a special command is recognized, the input line is changed
+    # accordingly. For example, "!ls" becomes "%x{ls}"
     def before(line)
       Autoreload::reload_all
       if line[0] == ?!
@@ -33,7 +47,10 @@ module Rish
         line
       end
     end
-    
+
+    # Called on the result of an evaluation.
+    #
+    # Used here mainly to clean up after the profiler.
     def after(result)
       if @profile
         Profiler__::stop_profile

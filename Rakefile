@@ -1,4 +1,8 @@
 # -*- ruby -*-
+
+# Copyright (c) 2010 by Mikio L. Braun
+# rish is distributed under a BSD-style license. See COPYING
+
 require 'rubygems'
 require 'rake/gempackagetask'
 require 'rake/testtask'

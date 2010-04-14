@@ -1,7 +1,12 @@
+# Copyright (c) 2010 by Mikio L. Braun
+# rish is distributed under a BSD-style license. See COPYING
+
 module Rish
+  # Collects commands which are available trough extensions.
   module Commands
     module_function
     
+    # Show help for a command, or just the builtin commands.
     def help(word=nil)
       if word
         puts %x{qri #{word}}

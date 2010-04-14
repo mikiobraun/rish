@@ -32,6 +32,11 @@ Download the gem file and type
    > gem install rish-0.1.gem
 </pre>
 
+License
+-------
+
+rish is distributed under a BSD-style license. See COPYING
+
 Running rish
 ------------
 

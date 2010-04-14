@@ -1,29 +1,31 @@
-# This file extends the Kernel's require function and adds the 
-# AutoReload module which allows to reload files once they have changed
-# on the disk.
-#
-# Basically, you just require your files as usual, and if you want to update
-# the files, either call AutoReload.reload(file) or AutoReload.reload_all.
-#
-# Written by Mikio L. Braun, March 16, 2008
+# Copyright (c) 2010 by Mikio L. Braun
+# rish is distributed under a BSD-style license. See COPYING
+
 require 'pp'
 require 'set'
 
-# This module tracks loaded files and their timestamps and allows to reload
-# files which have changed automatically by calling reload.
 module Rish
+  # This module tracks loaded files and their timestamps and allows to reload
+  # files which have changed automatically by calling reload.
+  #
+  # There is nothing magically happening here. Basically, you can
+  # reload a file by removing it from $" (the list of all loaded
+  # files) and require'ing it again.
   module Autoreload
+
     # stores the normalized filenames and their File.mtime timestamps
     @timestamps = Hash.new
     @notfound = Set.new
     @verbose = false
     @watched_dirs = []
-    
+
+    # Set verbosity flag. Setting this to true will report each file
+    # that has been reloaded.
     def self.verbose=(flag)
       @verbose = flag
     end
     
-    # find the full path to a file
+    # Find the full path to a file.
     def self.locate(file)
       return nil if @notfound.include? file
       $:.each do |dir|
@@ -41,7 +43,7 @@ module Rish
       return nil
     end
     
-    # store the time stamp of a file
+    # Store the time stamp of a file.
     def self.timestamp(file)
       path = locate(file)
       if path
@@ -50,7 +52,7 @@ module Rish
       end
     end
     
-    # put the extension on a filename
+    # Put the extension on a filename.
     def self.normalize(path, file)
       if File.extname(file) == ""
         return file + File.extname(path)
@@ -59,12 +61,13 @@ module Rish
       end
     end
     
-    # show all stored files and their timestamp
+    # Show all stored files and their timestamp.
     def self.dump
       pp @timestamps
     end
     
-    # reload a file
+    # Reload a file. With force=true, file is reloaded in
+    # any case.
     def self.reload(file, force=false)
       path = locate(file)
       file = normalize(path, file)
@@ -81,7 +84,7 @@ module Rish
       end
     end
     
-    # reload all files which were required
+    # Reload all files which were required.
     def self.reload_all(force=false)
       @timestamps.each_key do |file|
         self.reload(file, force)
@@ -89,11 +92,12 @@ module Rish
       check_directories
     end
     
-    # add directories to be watched
+    # Add directories to be watched.
     def self.watch_directory(dir)
       @watched_dirs << dir
     end
     
+    # Reload any new files in the watched directories.
     def self.check_directories
       @watched_dirs.each do |dir|
         Dir.glob("#{dir}/**/*.rb").each do |fn| 

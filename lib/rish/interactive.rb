@@ -1,47 +1,20 @@
+# Copyright (c) 2010 by Mikio L. Braun
+# rish is distributed under a BSD-style license. See COPYING
+
 require 'readline'
 require 'pp'
 
 module Rish
+  # Rish's own interactive mode.
+  #
+  # Similar to IRB, but much smaller. The advantage it has is that it
+  # doesn't look for line continuations and works better with rish's
+  # built-in commands (well, is this a feature or a bug?)
+  #
+  # Also, if the line ends in ";", the result is not plotted, just as in 
+  # matlab.
   class Interactive
-    BACKTRACE_HIDE = [ 'sun/', 'java/', 'org/jruby', 'interactive', ':', __FILE__ ]
-
-    def print_backtrace(bt)
-      bt.each do |t|
-        unless BACKTRACE_HIDE.inject(false) do |flag,h|
-            flag ||= starts_with(t, h)
-          end
-          puts "     #{t}"
-        end
-      end
-    end
-
-    def starts_with(long, short)
-      long[0...short.length] == short
-    end
-
-    def get_candidates(binding, where='')
-      candidates = []
-      %w(methods constants local_variables).each do |m|
-        begin
-          candidates += eval(where + m, binding)
-        rescue
-        end
-      end
-
-      if where == ''
-        eval('self.class.ancestors', binding).each do |an|
-          %w(methods constants).each do |m|
-            begin
-              candidates += an.send(m)
-            rescue
-            end
-          end
-        end
-      end
-
-      return candidates.sort.uniq
-    end
-
+    # Start an interactive shell.
     def run
       read_history
 
@@ -115,9 +88,20 @@ module Rish
       exit
     end
 
+    # Add a hook which is called before and after each line.
+    #
+    # The hook object as to have a +before+ and +after+ method.
+    # The +before+ method is called with the input line
+    # and has to return it or a changed version. Likewise,
+    # the +after+ method gets the result of the evaluation and
+    # has to return the value or a changed version.
     def hook=(h)
       @hook = h
     end
+
+    #######
+    private
+    #######
 
     def history_file
       File.join(ENV['HOME'], '.marge_history')
@@ -126,10 +110,6 @@ module Rish
     def print_result(result)
       puts result.inspect unless result.nil?
     end
-
-    #######
-    private
-    #######
 
     def read_history
       begin
@@ -146,6 +126,46 @@ module Rish
         Readline::HISTORY.each {|l| f.puts l }
       end
     end
+
+    # For cleanin up JRuby's stack traces.
+    BACKTRACE_HIDE = [ 'sun/', 'java/', 'org/jruby', 'interactive', ':', __FILE__ ]
+
+    def print_backtrace(bt)
+      bt.each do |t|
+        unless BACKTRACE_HIDE.inject(false) do |flag,h|
+            flag ||= starts_with(t, h)
+          end
+          puts "     #{t}"
+        end
+      end
+    end
+
+    def starts_with(long, short)
+      long[0...short.length] == short
+    end
+
+    def get_candidates(binding, where='')
+      candidates = []
+      %w(methods constants local_variables).each do |m|
+        begin
+          candidates += eval(where + m, binding)
+        rescue
+        end
+      end
+
+      if where == ''
+        eval('self.class.ancestors', binding).each do |an|
+          %w(methods constants).each do |m|
+            begin
+              candidates += an.send(m)
+            rescue
+            end
+          end
+        end
+      end
+
+      return candidates.sort.uniq
+    end
   end
 end
 
@@ -153,7 +173,7 @@ if __FILE__ == $0
   include M
 
   puts "Interactive with a before and after hook"
-  class MyInteractive < Interactive
+  class MyInteractive < Interactive # :nodoc:
     def process_line(line)
       puts "This line is great: #{line}"
       line
