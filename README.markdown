@@ -7,13 +7,13 @@ marge/shell is a replacement for irb which has some nice features:
   files. That way, you can stay in your shell, keep all your data
   and play around with your files.
 
-- Integrated help feature. Typing "?String" invokes qri (a faster
+- Integrated help feature. Typing `?String` invokes qri (a faster
   ri replacement) and prints the help
 
-- Shell-out. Typing "!ls" gives you a shell-out. With "!ls&" even
+- Shell-out. Typing `!ls` gives you a shell-out. With `!ls&` even
   as a background process.
 
-- Profiling. With "@p some_really_long_running_function" invokes
+- Profiling. With `@p some_really_long_running_function` invokes
   the expression and runs the profiler at the same time.
 
 Other features I never used are missing, in particular debugging, and
@@ -24,7 +24,7 @@ irb, but for now, this is all there is.
 Running Marge
 -------------
 
-To invoke marge/shell, type "marge" at the command line. The following
+To invoke marge/shell, type `marge` at the command line. The following
 options are available:
 
 -I dir     : adds dir to the load path
