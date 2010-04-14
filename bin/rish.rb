@@ -1,5 +1,5 @@
-require 'marge/shell/shell'
-require 'marge/shell/autoreload'
+require 'rish/shell'
+require 'rish/autoreload'
 
 def banner
   puts <<EOS
@@ -27,6 +27,8 @@ EOS
 
 end
 
+type = :irb
+
 until ARGV.empty?
   cmd = ARGV.shift
   case cmd
@@ -47,6 +49,10 @@ until ARGV.empty?
     cmd = ARGV.shift
     puts eval(cmd)
     exit
+  when '--irb'
+    type = :irb
+  when '--rish'
+    type = :rish
   else
     require cmd
   end
@@ -54,7 +60,6 @@ end
 
 banner
 
-Marge::Shell::AutoReload.check_directories
+Rish::Autoreload.check_directories
 
-shell = Marge::Shell::MargeShell.new
-shell.run
+shell = Rish.shell(type)
