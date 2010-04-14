@@ -40,7 +40,7 @@ rish is distributed under a BSD-style license. See COPYING
 Running rish
 ------------
 
-To invoke rish, type `marge` at the command line. The following
+To invoke rish, type `rish` at the command line. The following
 options are available:
 
 <pre>
@@ -56,7 +56,7 @@ other	   : requires other
 
 Files which are loaded ones are automatically watched for changes.
 
-Through the "-I", "-a" and "-w" flags, you can use marge in a
+Through the "-I", "-a" and "-w" flags, you can use rish in a
 project-dependent way. For example, you lay out your files as usual
 like this:
 
@@ -67,5 +67,5 @@ like this:
           README
 </pre>
 
-Then, you can cd to project, and run "marge -I lib -w lib" to load
+Then, you can cd to project, and run "rish -I lib -w lib" to load
 and watch all files in "lib" for changes.

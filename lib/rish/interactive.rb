@@ -104,7 +104,7 @@ module Rish
     #######
 
     def history_file
-      File.join(ENV['HOME'], '.marge_history')
+      File.join(ENV['HOME'], '.rish_history')
     end
 
     def print_result(result)

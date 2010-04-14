@@ -57,7 +57,7 @@ until ARGV.empty?
     Dir.glob("#{dir}/**/*.rb").each {|fn| require fn}
   when '-w'
     dir = ARGV.shift
-    Marge::Shell::AutoReload.watch_directory dir
+    Rish::Autoreload.watch_directory dir
   when '-h', '--help'
     usage
     exit
