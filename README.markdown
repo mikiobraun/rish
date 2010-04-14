@@ -1,30 +1,39 @@
-marge/shell - interactive power shell for (J)Ruby
+rish - interactive power shell for (J)Ruby
 =================================================
 
-marge/shell is a replacement for irb which has some nice features:
+Version 0.1, April 14, 2010
 
-- ability to automatically reload files/watch directories for new
-  files. That way, you can stay in your shell, keep all your data
+rush is a replacement for/extension of irb which has some nice
+features:
+
+- _Automatically reload files/watch directories for new
+  files._ That way, you can stay in your shell, keep all your data
   and play around with your files.
 
-- Integrated help feature. Typing `?String` invokes qri (a faster
+- _Integrated help feature._ Typing `?String` invokes qri (a faster
   ri replacement) and prints the help
 
-- Shell-out. Typing `!ls` gives you a shell-out. With `!ls&` even
-  as a background process.
+- _Shell-out._ Typing `!ls` gives you a shell-out. With `!ls&` even
+  as a background process (or `!&ls` for the IRB mode)
 
-- Profiling. With `@p some_really_long_running_function` invokes
+- _Profiling._ With `@p some_really_long_running_function` invokes
   the expression and runs the profiler at the same time.
 
-Other features I never used are missing, in particular debugging, and
-sub-shells. At some point I'll probably hack the above features into
-irb, but for now, this is all there is.
+- Either runs as an extension of IRB or in it's own version which has
+  less features (e.g. no debugging, no sub-shells, no multi-line
+  edits), but integrates better with the above features.
 
+Installing rish
+---------------
 
-Running Marge
--------------
+Download the gem file and type
 
-To invoke marge/shell, type `marge` at the command line. The following
+   > gem install rish-0.1.gem
+
+Running rish
+------------
+
+To invoke rish, type `marge` at the command line. The following
 options are available:
 
 <pre>
@@ -33,6 +42,8 @@ options are available:
 -h, --help : shows help
 -e expr    : executes expression
 -w dir     : watches dir for changes and automatically loads those
+--irb      : runs in IRB mode
+--rish     : runs in rish's own interactive mode
 other	   : requires other
 </pre>
 
