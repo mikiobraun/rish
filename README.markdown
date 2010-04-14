@@ -1,5 +1,5 @@
-rish - interactive power shell for (J)Ruby
-=================================================
+rish - Ruby interactive shell
+=============================
 
 Version 0.1, April 14, 2010
 
