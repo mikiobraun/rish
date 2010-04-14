@@ -1,4 +1,5 @@
-marge/shell - interactive power shell for (j)ruby
+marge/shell - interactive power shell for (J)Ruby
+=================================================
 
 marge/shell is a replacement for irb which has some nice features:
 
@@ -20,7 +21,8 @@ sub-shells. At some point I'll probably hack the above features into
 irb, but for now, this is all there is.
 
 
-RUNNING MARGE
+Running Marge
+-------------
 
 To invoke marge/shell, type "marge" at the command line. The following
 options are available:
