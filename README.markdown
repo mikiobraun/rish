@@ -28,7 +28,9 @@ Installing rish
 
 Download the gem file and type
 
+<pre>
    > gem install rish-0.1.gem
+</pre>
 
 Running rish
 ------------
