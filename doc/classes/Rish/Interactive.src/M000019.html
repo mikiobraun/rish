@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>run (Rish::Interactive)</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="stylesheet" href="../../.././rdoc-style.css" type="text/css" media="screen" />
+</head>
+<body class="standalone-code">
+  <pre><span class="ruby-comment cmt"># File lib/rish/interactive.rb, line 18</span>
+    <span class="ruby-keyword kw">def</span> <span class="ruby-identifier">run</span>
+      <span class="ruby-identifier">read_history</span>
+
+      <span class="ruby-comment cmt">#binding = Workspace.new.binding</span>
+      <span class="ruby-identifier">binding</span> = <span class="ruby-constant">Object</span><span class="ruby-operator">::</span><span class="ruby-constant">TOPLEVEL_BINDING</span>
+
+      <span class="ruby-constant">Readline</span>.<span class="ruby-identifier">completion_proc</span> = <span class="ruby-identifier">proc</span> <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">s</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword kw">if</span> <span class="ruby-regexp re">/([a-zA-Z_]+)(::|\.)([^.]*)/</span> <span class="ruby-operator">=~</span> <span class="ruby-identifier">s</span>
+          <span class="ruby-identifier">prefix</span> = <span class="ruby-identifier">$1</span>
+          <span class="ruby-identifier">sep</span> = <span class="ruby-identifier">$2</span>
+          <span class="ruby-identifier">s</span> = <span class="ruby-identifier">$3</span>
+          
+          <span class="ruby-identifier">candidates</span> = <span class="ruby-identifier">get_candidates</span>(<span class="ruby-identifier">binding</span>, <span class="ruby-identifier">prefix</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">sep</span>)
+        <span class="ruby-keyword kw">else</span>
+          <span class="ruby-identifier">prefix</span> = <span class="ruby-value str">''</span>
+          <span class="ruby-identifier">sep</span> = <span class="ruby-value str">''</span>
+
+          <span class="ruby-identifier">candidates</span> = <span class="ruby-identifier">get_candidates</span>(<span class="ruby-identifier">binding</span>)
+        <span class="ruby-keyword kw">end</span>
+
+        <span class="ruby-identifier">candidates</span> = <span class="ruby-identifier">candidates</span>.<span class="ruby-identifier">select</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">m</span><span class="ruby-operator">|</span> <span class="ruby-identifier">starts_with</span>(<span class="ruby-identifier">m</span>, <span class="ruby-identifier">s</span>)}
+        <span class="ruby-identifier">candidates</span>.<span class="ruby-identifier">map!</span> {<span class="ruby-operator">|</span><span class="ruby-identifier">c</span><span class="ruby-operator">|</span> <span class="ruby-identifier">prefix</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">sep</span> <span class="ruby-operator">+</span> <span class="ruby-identifier">c</span>}
+      <span class="ruby-keyword kw">end</span>
+      
+      <span class="ruby-identifier">thread</span> = <span class="ruby-constant">Thread</span>.<span class="ruby-identifier">current</span>
+
+      <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:input</span>
+
+      <span class="ruby-identifier">trap</span>(<span class="ruby-value str">'SIGINT'</span>) <span class="ruby-keyword kw">do</span>
+        <span class="ruby-keyword kw">case</span> <span class="ruby-identifier">state</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:input</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-value str">&quot;Exiting...&quot;</span>
+          <span class="ruby-identifier">thread</span>.<span class="ruby-identifier">raise</span> <span class="ruby-constant">Interrupt</span>
+          <span class="ruby-identifier">exit</span>
+        <span class="ruby-keyword kw">when</span> <span class="ruby-identifier">:calc</span>
+          <span class="ruby-identifier">thread</span>.<span class="ruby-identifier">raise</span> <span class="ruby-constant">Interrupt</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">lineno</span> = <span class="ruby-value">0</span>
+      <span class="ruby-identifier">s</span> = <span class="ruby-value str">'okay'</span>
+      <span class="ruby-keyword kw">while</span> <span class="ruby-identifier">s</span>
+        <span class="ruby-identifier">lineno</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+        <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:input</span>
+        <span class="ruby-identifier">s</span> = <span class="ruby-constant">Readline</span>.<span class="ruby-identifier">readline</span>(<span class="ruby-node">&quot;interactive:#{lineno}&gt; &quot;</span>, <span class="ruby-keyword kw">true</span>)
+        <span class="ruby-comment cmt">#print &quot;interactive:#{lineno}&gt; &quot;</span>
+        <span class="ruby-comment cmt">#s = gets.chomp</span>
+        <span class="ruby-keyword kw">break</span> <span class="ruby-keyword kw">if</span> (<span class="ruby-identifier">s</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">s</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'exit'</span> <span class="ruby-keyword kw">or</span> <span class="ruby-identifier">s</span> <span class="ruby-operator">==</span> <span class="ruby-value str">'quit'</span>)
+        <span class="ruby-keyword kw">begin</span>
+          <span class="ruby-identifier">s</span> = <span class="ruby-ivar">@hook</span>.<span class="ruby-identifier">before</span>(<span class="ruby-identifier">s</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@hook</span>
+          <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:calc</span>
+          <span class="ruby-identifier">result</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">s</span>, <span class="ruby-identifier">binding</span>, <span class="ruby-value str">'interactive'</span>, <span class="ruby-identifier">lineno</span>)
+          <span class="ruby-identifier">state</span> = <span class="ruby-identifier">:input</span>
+          <span class="ruby-identifier">result</span> = <span class="ruby-ivar">@hook</span>.<span class="ruby-identifier">after</span>(<span class="ruby-identifier">result</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-ivar">@hook</span>
+          <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">s</span>[<span class="ruby-value">-1</span>] <span class="ruby-operator">!=</span> <span class="ruby-value">?;</span>
+            <span class="ruby-identifier">print_result</span>(<span class="ruby-identifier">result</span>)
+            <span class="ruby-identifier">$ans</span> = <span class="ruby-identifier">result</span>
+          <span class="ruby-keyword kw">end</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">SyntaxError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;SyntaxError: #{e}&quot;</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">StandardError</span>, <span class="ruby-constant">ScriptError</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;#{e.class}: #{e.to_s[0..1000]}&quot;</span>
+          <span class="ruby-identifier">print_backtrace</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>
+        <span class="ruby-keyword kw">rescue</span> <span class="ruby-constant">SignalException</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+          <span class="ruby-identifier">puts</span> <span class="ruby-node">&quot;Caught #{e.class}&quot;</span>
+          <span class="ruby-identifier">print_backtrace</span> <span class="ruby-identifier">e</span>.<span class="ruby-identifier">backtrace</span>
+        <span class="ruby-keyword kw">end</span>
+      <span class="ruby-keyword kw">end</span>
+
+      <span class="ruby-identifier">write_history</span>
+      <span class="ruby-identifier">exit</span>
+    <span class="ruby-keyword kw">end</span></pre>
+</body>
+</html>
