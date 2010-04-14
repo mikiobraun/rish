@@ -40,7 +40,7 @@ Through the "-I", "-a" and "-w" flags, you can use marge in a
 project-dependent way. For example, you lay out your files as usual
 like this:
 
-  project/
+   project/
           lib/
               somefile.rb
           README
