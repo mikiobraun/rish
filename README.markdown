@@ -27,12 +27,14 @@ Running Marge
 To invoke marge/shell, type `marge` at the command line. The following
 options are available:
 
+<pre>
 -I dir     : adds dir to the load path
 -a dir     : loads all files in dir on startup
 -h, --help : shows help
 -e expr    : executes expression
 -w dir     : watches dir for changes and automatically loads those
 other	   : requires other
+</pre>
 
 Files which are loaded ones are automatically watched for changes.
 
@@ -40,10 +42,12 @@ Through the "-I", "-a" and "-w" flags, you can use marge in a
 project-dependent way. For example, you lay out your files as usual
 like this:
 
+<pre>
    project/
           lib/
               somefile.rb
           README
+</pre>
 
 Then, you can cd to project, and run "marge -I lib -w lib" to load
 and watch all files in "lib" for changes.
